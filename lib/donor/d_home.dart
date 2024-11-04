@@ -12,26 +12,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final Color _primaryColor = const Color(0xFFB19CD9); // Soft purple
-  final Color _accentColor = const Color(0xFFB0B0B0); // Grey
-  final Color _textColor = const Color(0xFF333333); // Darker text color
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Your Donations',
-          style: TextStyle(
-            fontSize: 24,
-            color: Color(0xFF333333), // Dark text color
-          ),
-        ),
-        backgroundColor: _primaryColor,
+        title: const Text('Your Donations'),
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
-            color: _textColor,
             onPressed: () {
               Navigator.push(
                 context,
@@ -53,13 +41,11 @@ class _HomePageState extends State<HomePage> {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Center(
-                        child: Text("No donations available",
-                            style: TextStyle(color: _textColor)));
+                    return const Center(child: Text("No donations available"));
                   }
 
                   return ListView(
@@ -67,34 +53,16 @@ class _HomePageState extends State<HomePage> {
                       final data = doc.data() as Map<String, dynamic>;
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 8.0),
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
                         child: ListTile(
                           contentPadding: const EdgeInsets.all(16.0),
-                          title: Text(
-                            data['foodName'] ?? 'No title',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: _textColor,
-                            ),
-                          ),
-                          subtitle: Text(
-                            data['description'] ?? 'N/A',
-                            style: TextStyle(fontSize: 15, color: _accentColor),
-                          ),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios,
-                            color: Colors.grey[600],
-                          ),
+                          title: Text(data['foodName'] ?? 'No title'),
+                          subtitle: Text(data['description'] ?? 'N/A'),
+                          trailing: const Icon(Icons.arrow_forward_ios),
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    Detail(doc: doc), // Pass the document here
+                                builder: (context) => Detail(doc: doc),
                               ),
                             );
                           },
@@ -110,16 +78,6 @@ class _HomePageState extends State<HomePage> {
               width: double.infinity,
               height: 60,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
                 onPressed: () {
                   Navigator.push(
                     context,
