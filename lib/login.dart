@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'signup.dart'; // Import the SignUpPage
-import 'home.dart'; // Import the HomePage
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:food_donation_app/delivery/v_home.dart';
+import 'signup.dart';
+import 'donor/d_home.dart'; //Donorhomepage
+import 'recipient/r_home.dart'; // RecipientHomePage
 
 class LoginPage extends StatefulWidget {
   @override
@@ -10,6 +13,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _formKey = GlobalKey<FormState>();
 
   String email = '';
@@ -18,22 +22,52 @@ class _LoginPageState extends State<LoginPage> {
   void _login() async {
     if (_formKey.currentState!.validate()) {
       try {
-        await _auth.signInWithEmailAndPassword(
-            email: email, password: password);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login Successful!')),
+        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
         );
-        // Navigate to the HomePage after successful login
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+
+        // Fetch user role from Firestore
+        DocumentSnapshot userDoc = await _firestore
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
+
+        if (userDoc.exists) {
+          String role = userDoc['role'];
+
+          // Navigate based on role
+          if (role == 'Donor') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          } else if (role == 'Recipient') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => DonationsListPage()),
+            );
+          } else if (role == 'Volunteer') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => VolunteerHomePage()),
+            );
+          } else {
+            _showSnackBar('Unknown role.');
+          }
+        } else {
+          _showSnackBar('User data not found.');
+        }
       } on FirebaseAuthException catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login Failed: ${e.message}')),
-        );
+        _showSnackBar('Login Failed: ${e.message}');
       }
     }
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override

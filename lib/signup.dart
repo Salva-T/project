@@ -17,8 +17,8 @@ class _SignUpPageState extends State<SignUpPage> {
   String email = '';
   String password = '';
   String role = 'Donor'; // Default role
-  String location = '';
-  String mobile = '';
+  String phoneNumber = '';
+  String address = '';
 
   void _signUp() async {
     if (_formKey.currentState!.validate()) {
@@ -34,8 +34,8 @@ class _SignUpPageState extends State<SignUpPage> {
           'name': name,
           'email': email,
           'role': role,
-          'location': location,
-          'mobile': mobile,
+          'phoneNumber': phoneNumber,
+          'address': address,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -86,23 +86,23 @@ class _SignUpPageState extends State<SignUpPage> {
               DropdownButtonFormField<String>(
                 value: role,
                 decoration: InputDecoration(labelText: 'Role'),
-                items: ['Donor', 'Recipient']
+                items: ['Donor', 'Recipient', 'Volunteer']
                     .map((role) =>
                         DropdownMenuItem(value: role, child: Text(role)))
                     .toList(),
                 onChanged: (value) => role = value!,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Location'),
-                onChanged: (value) => location = value,
+                decoration: InputDecoration(labelText: 'Phone Number'),
+                onChanged: (value) => phoneNumber = value,
                 validator: (value) =>
-                    value!.isEmpty ? 'Please enter your location' : null,
+                    value!.isEmpty ? 'Please enter your phone number' : null,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Mobile Number'),
-                onChanged: (value) => mobile = value,
+                decoration: InputDecoration(labelText: 'Address'),
+                onChanged: (value) => address = value,
                 validator: (value) =>
-                    value!.isEmpty ? 'Please enter your mobile number' : null,
+                    value!.isEmpty ? 'Please enter your address' : null,
               ),
               SizedBox(height: 20),
               ElevatedButton(
